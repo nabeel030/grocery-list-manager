@@ -1,7 +1,8 @@
 import React, {useState, useEffect, useContext} from "react";
 import { Text } from "react-native-paper";
-import { View, StyleSheet, FlatList, TouchableOpacity, Alert, KeyboardAvoidingView, Keyboard, Platform, TextInput, RefreshControl, ScrollView } from "react-native";
+import { View, StyleSheet, FlatList, TouchableOpacity, Alert, KeyboardAvoidingView, Keyboard, Platform, TextInput } from "react-native";
 import {openDatabase} from 'react-native-sqlite-storage';
+import MaterialCommunityIcons from 'react-native-vector-icons/MaterialCommunityIcons';
 import Toast from 'react-native-simple-toast';
 import {ItemsContext} from '../context'
 
@@ -173,7 +174,7 @@ function ItemsList() {
                                 <Text style={styles.qty}>{item.qty}</Text>
                             </View>
                             <TouchableOpacity onPress={() => markItemAsBought(item, index)}>
-                                <View style={styles.circular}></View>
+                                <MaterialCommunityIcons name="cart-plus" color={'#4BB543'} size={25} />
                             </TouchableOpacity>
                         </View>
                     </TouchableOpacity>
@@ -203,7 +204,7 @@ function ItemsList() {
     container: {
         flex: 1,
         padding: 10,
-        paddingTop: 22,
+        paddingTop: 18,
         backgroundColor: '#808080',
         paddingBottom: 80
     },
@@ -238,13 +239,7 @@ function ItemsList() {
     itemText: {
       maxWidth: '80%',
     },
-    circular: {
-      width: 25,
-      height: 25,
-      borderColor: '#55BCF6',
-      borderWidth: 2,
-      borderRadius: 50,
-    },
+
     qty: {
         marginStart: 50
     },

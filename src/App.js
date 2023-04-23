@@ -20,7 +20,7 @@ function App() {
       <NavigationContainer
           initialRouteName="Items"
           screenOptions={{
-            tabBarActiveTintColor: '#e91e63',
+            tabBarActiveTintColor: '#55BCF6',
           }}
           >
         <Tab.Navigator>
@@ -33,7 +33,7 @@ function App() {
           <Tab.Screen name="Cart" component={ItemsBought} 
             options={{
               tabBarIcon: ({ color, size }) => (
-                <MaterialCommunityIcons name="playlist-check" color={color} size={size} />
+                <MaterialCommunityIcons name="cart-variant" color={color} size={size} />
               ),
             }}/>    
               

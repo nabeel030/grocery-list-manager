@@ -1,6 +1,7 @@
 import React, {useState, useEffect, useContext} from "react";
 import { Text } from "react-native-paper";
-import { View, StyleSheet, FlatList, TouchableOpacity, Alert } from "react-native";
+import { View, StyleSheet, FlatList, TouchableOpacity } from "react-native";
+import MaterialCommunityIcons from 'react-native-vector-icons/MaterialCommunityIcons';
 import {openDatabase} from 'react-native-sqlite-storage';
 import Toast from 'react-native-simple-toast';
 import {ItemsContext} from '../context'
@@ -87,7 +88,7 @@ function ItemsBought() {
                         <Text style={styles.qty}>{item.qty}</Text>
                     </View>
                     <TouchableOpacity onPress={() => markItemAsBought(item, index)}>
-                        <View style={styles.circular}></View>
+                        <MaterialCommunityIcons name="cart-remove" color={'#FF0000'} size={25} />
                     </TouchableOpacity>
 
                 </View>
@@ -139,12 +140,8 @@ function ItemsBought() {
       maxWidth: '80%',
     },
     circular: {
-      width: 25,
-      height: 25,
-      borderColor: '#55BCF6',
-      borderWidth: 2,
-      borderRadius: 50,
-      backgroundColor: '#55BCF6',
+    //   color: '#55BCF6',
+    //   borderColor: '#55BCF6',
     },
     qty: {
         marginStart: 50
