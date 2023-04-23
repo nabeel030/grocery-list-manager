@@ -1,18 +1,20 @@
 import { createContext, useState } from 'react';
 
-const CounterContext = createContext();
+export const ItemsContext = createContext();
 
-const CounterProvider = ({ children }) => {
+export const ItemsProvider = ({ children }) => {
     const [items, setItems] = useState([]);
-  
-    const increment = () => {
-      setCount(count + 1);
-    };
+    const [itemsBought, setItemsBought] = useState([]);
   
     return (
-      <CounterContext.Provider value={{ count, increment }}>
+      <ItemsContext.Provider value={{ items, setItems, itemsBought,  setItemsBought}}>
         {children}
-      </CounterContext.Provider>
+      </ItemsContext.Provider>
     );
 };
+
+// export {
+//   ItemsContext,
+//   ItemsProvider
+// }
   

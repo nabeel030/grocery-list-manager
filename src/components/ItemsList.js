@@ -1,14 +1,15 @@
-import React, {useState, useEffect} from "react";
+import React, {useState, useEffect, useContext} from "react";
 import { Text } from "react-native-paper";
 import { View, StyleSheet, FlatList, TouchableOpacity, Alert, KeyboardAvoidingView, Keyboard, Platform, TextInput, RefreshControl, ScrollView } from "react-native";
 import {openDatabase} from 'react-native-sqlite-storage';
+import {ItemsContext} from '../context'
 
 function ItemsList() {
     let db = openDatabase({ name: 'grocery.db'});
     const [item, setItem] = useState(null);
     const [qty, setQty] = useState(null);
     const [refreshing, setRefreshing] = useState(false);
-    const [items, setItems] = useState([]);
+    const { items, setItems, itemsBought, setItemsBought } = useContext(ItemsContext);
 
     const refreshItemsList = () => {
         setRefreshing(true);
@@ -91,6 +92,7 @@ function ItemsList() {
                 (tx, res) => {
                     if(res.rowsAffected) {
                         splice(index);
+                        setItemsBought([...itemsBought, item])
                     } else {
                         Alert.alert('Oops!', 'Something went wrong!');
                     }                    

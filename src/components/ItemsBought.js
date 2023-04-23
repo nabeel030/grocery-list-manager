@@ -1,11 +1,13 @@
-import React, {useState, useEffect} from "react";
+import React, {useState, useEffect, useContext} from "react";
 import { Text } from "react-native-paper";
 import { View, StyleSheet, FlatList, TouchableOpacity, Alert } from "react-native";
 import {openDatabase} from 'react-native-sqlite-storage';
+import {ItemsContext} from '../context'
 
 function ItemsBought() {
     let db = openDatabase({ name: 'grocery.db'});
-    const [items, setItems] = useState([]);
+    const { items, setItems, itemsBought, setItemsBought } = useContext(ItemsContext);
+
     const [refreshing, setRefreshing] = useState(false);
 
     const refreshItemsList = () => {
@@ -29,16 +31,16 @@ function ItemsBought() {
                         arr.push(row);
                     }
 
-                    setItems(arr);
+                    setItemsBought(arr);
                 }
             );
         });
     }
 
     const splice = (index) => {
-        let itemsCopy = [...items];
+        let itemsCopy = [...itemsBought];
         itemsCopy.splice(index, 1);
-        setItems(itemsCopy);
+        setItemsBought(itemsCopy);
     }
 
     const markItemAsBought = (item,index) => {
@@ -51,6 +53,7 @@ function ItemsBought() {
                 (tx, res) => {
                     if(res.rowsAffected) {
                         splice(index);
+                        setItems([...items, item])
                     } else {
                         Alert.alert('Oops!', 'Something went wrong!');
                     }                    
@@ -71,7 +74,7 @@ function ItemsBought() {
                 <Text>Action</Text>
             </View>
             <FlatList 
-                data={items}
+                data={itemsBought}
                 renderItem={({item,index}) => 
                 <View style={styles.item}>
                     <View style={styles.itemLeft}>
