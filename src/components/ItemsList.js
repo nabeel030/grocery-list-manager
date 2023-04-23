@@ -2,6 +2,7 @@ import React, {useState, useEffect, useContext} from "react";
 import { Text } from "react-native-paper";
 import { View, StyleSheet, FlatList, TouchableOpacity, Alert, KeyboardAvoidingView, Keyboard, Platform, TextInput, RefreshControl, ScrollView } from "react-native";
 import {openDatabase} from 'react-native-sqlite-storage';
+import Toast from 'react-native-simple-toast';
 import {ItemsContext} from '../context'
 
 function ItemsList() {
@@ -25,8 +26,9 @@ function ItemsList() {
                 [item,qty,0],
                 (tx, res) => {
                     if(!res.rowsAffected) {
-                        Alert.alert('Something went wrong!');
+                        Toast.show('Something went wrong! Try again', Toast.SHORT);
                     } else {
+                        Toast.show('New Item added successfully!', Toast.SHORT);
                         refreshItemsList();
                     } 
                 }
@@ -45,10 +47,10 @@ function ItemsList() {
                 [id],
                 (tx, res) => {
                     if(res.rowsAffected) {
-                        Alert.alert('Success!', 'Item Deleted Successfully!');
                         splice(index);
+                        Toast.show('Item Deleted Successfully!', Toast.SHORT);
                     } else {
-                        Alert.alert('Oops!', 'Something went wrong!');
+                        Toast.show('Something went wrong! Try again', Toast.SHORT);
                     }                    
                 }
             )
@@ -93,8 +95,9 @@ function ItemsList() {
                     if(res.rowsAffected) {
                         splice(index);
                         setItemsBought([...itemsBought, item])
+                        Toast.show('Item added to cart successfully!', Toast.SHORT);
                     } else {
-                        Alert.alert('Oops!', 'Something went wrong!');
+                        Toast.show('Something went wrong! Try again', Toast.SHORT);
                     }                    
                 }
             )

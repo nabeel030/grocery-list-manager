@@ -18,19 +18,19 @@ function App() {
   return (
     <ItemsProvider>
       <NavigationContainer
-          initialRouteName="Items to Buy"
+          initialRouteName="Items"
           screenOptions={{
             tabBarActiveTintColor: '#e91e63',
           }}
           >
         <Tab.Navigator>
-          <Tab.Screen name="Items to Buy" component={ItemsList} 
+          <Tab.Screen name="Items" component={ItemsList} 
             options={{
               tabBarIcon: ({ color, size }) => (
                 <MaterialCommunityIcons name="format-list-bulleted" color={color} size={size} />
               ),
             }}/>
-          <Tab.Screen name="Items Bought" component={ItemsBought} 
+          <Tab.Screen name="Cart" component={ItemsBought} 
             options={{
               tabBarIcon: ({ color, size }) => (
                 <MaterialCommunityIcons name="playlist-check" color={color} size={size} />

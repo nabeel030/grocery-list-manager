@@ -2,6 +2,7 @@ import React, {useState, useEffect, useContext} from "react";
 import { Text } from "react-native-paper";
 import { View, StyleSheet, FlatList, TouchableOpacity, Alert } from "react-native";
 import {openDatabase} from 'react-native-sqlite-storage';
+import Toast from 'react-native-simple-toast';
 import {ItemsContext} from '../context'
 
 function ItemsBought() {
@@ -54,8 +55,9 @@ function ItemsBought() {
                     if(res.rowsAffected) {
                         splice(index);
                         setItems([...items, item])
+                        Toast.show('Item removed from cart successfully!', Toast.SHORT);
                     } else {
-                        Alert.alert('Oops!', 'Something went wrong!');
+                        Toast.show('Something went wrong! Try again', Toast.SHORT);
                     }                    
                 }
             )
