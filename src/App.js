@@ -25,13 +25,13 @@ function App() {
         <Tab.Screen name="Items to Buy" component={ItemsList} 
           options={{
             tabBarIcon: ({ color, size }) => (
-              <MaterialCommunityIcons name="home" color={color} size={size} />
+              <MaterialCommunityIcons name="format-+list-bulleted" color={color} size={size} />
             ),
           }}/>
         <Tab.Screen name="Items Bought" component={ItemsBought} 
           options={{
             tabBarIcon: ({ color, size }) => (
-              <MaterialCommunityIcons name="alarm" color={color} size={size} />
+              <MaterialCommunityIcons name="playlist-check" color={color} size={size} />
             ),
           }}/>    
              

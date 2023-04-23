@@ -15,9 +15,9 @@
             <BuildableReference
                BuildableIdentifier = "primary"
                BlueprintIdentifier = "13B07F861A680F5B00A75B9A"
-               BuildableName = "fingerprint.app"
-               BlueprintName = "fingerprint"
-               ReferencedContainer = "container:fingerprint.xcodeproj">
+               BuildableName = "grocerylistmanager.app"
+               BlueprintName = "grocerylistmanager"
+               ReferencedContainer = "container:grocerylistmanager.xcodeproj">
             </BuildableReference>
          </BuildActionEntry>
       </BuildActionEntries>
@@ -33,9 +33,9 @@
             <BuildableReference
                BuildableIdentifier = "primary"
                BlueprintIdentifier = "00E356ED1AD99517003FC87E"
-               BuildableName = "fingerprintTests.xctest"
-               BlueprintName = "fingerprintTests"
-               ReferencedContainer = "container:fingerprint.xcodeproj">
+               BuildableName = "grocerylistmanagerTests.xctest"
+               BlueprintName = "grocerylistmanagerTests"
+               ReferencedContainer = "container:grocerylistmanager.xcodeproj">
             </BuildableReference>
          </TestableReference>
       </Testables>
@@ -55,9 +55,9 @@
          <BuildableReference
             BuildableIdentifier = "primary"
             BlueprintIdentifier = "13B07F861A680F5B00A75B9A"
-            BuildableName = "fingerprint.app"
-            BlueprintName = "fingerprint"
-            ReferencedContainer = "container:fingerprint.xcodeproj">
+            BuildableName = "grocerylistmanager.app"
+            BlueprintName = "grocerylistmanager"
+            ReferencedContainer = "container:grocerylistmanager.xcodeproj">
          </BuildableReference>
       </BuildableProductRunnable>
    </LaunchAction>
@@ -72,9 +72,9 @@
          <BuildableReference
             BuildableIdentifier = "primary"
             BlueprintIdentifier = "13B07F861A680F5B00A75B9A"
-            BuildableName = "fingerprint.app"
-            BlueprintName = "fingerprint"
-            ReferencedContainer = "container:fingerprint.xcodeproj">
+            BuildableName = "grocerylistmanager.app"
+            BlueprintName = "grocerylistmanager"
+            ReferencedContainer = "container:grocerylistmanager.xcodeproj">
          </BuildableReference>
       </BuildableProductRunnable>
    </ProfileAction>
