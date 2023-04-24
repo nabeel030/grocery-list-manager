@@ -88,7 +88,7 @@ function ItemsBought() {
                         <Text style={styles.qty}>{item.qty}</Text>
                     </View>
                     <TouchableOpacity onPress={() => markItemAsBought(item, index)}>
-                        <MaterialCommunityIcons name="cart-remove" color={'#FF0000'} size={25} />
+                        <MaterialCommunityIcons name="cart-arrow-up" color={'#FF0000'} size={25} />
                     </TouchableOpacity>
 
                 </View>
@@ -104,7 +104,7 @@ function ItemsBought() {
     container: {
         flex: 1,
         padding: 10,
-        paddingTop: 22,
+        paddingTop: 18,
         backgroundColor: '#808080',
         paddingBottom: 80
     },

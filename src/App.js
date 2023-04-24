@@ -17,13 +17,12 @@ function App() {
 
   return (
     <ItemsProvider>
-      <NavigationContainer
-          initialRouteName="Items"
+      <NavigationContainer>
+        <Tab.Navigator
           screenOptions={{
             tabBarActiveTintColor: '#55BCF6',
-          }}
-          >
-        <Tab.Navigator>
+            headerShown: false
+          }}>
           <Tab.Screen name="Items" component={ItemsList} 
             options={{
               tabBarIcon: ({ color, size }) => (

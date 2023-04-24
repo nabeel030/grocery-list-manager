@@ -111,15 +111,12 @@ function ItemsList() {
               "SELECT name FROM sqlite_master WHERE type='table' AND name='items'",
               [],
               (tx, res) => {
-                console.log('item:', res.rows.length);
                 if (res.rows.length == 0) {
                   txn.executeSql('DROP TABLE IF EXISTS items', []);
                   txn.executeSql(
                     'CREATE TABLE IF NOT EXISTS items(id INTEGER PRIMARY KEY AUTOINCREMENT, name VARCHAR(30), qty VARCHAR(15), bought INTEGER)',
                     []
                   );
-                } else {
-                  console.log("Already created!");
                 }
               }
             );
@@ -164,7 +161,6 @@ function ItemsList() {
                     data={items}
                     keyExtractor={(items, index) => String(index)}
                     renderItem={({item,index}) => 
-                    <TouchableOpacity onLongPress={() => showConfirmDialog(item.id, index)}>
                         <View style={styles.item}>
                             <View style={styles.itemLeft}>
                                 <View style={styles.square}>
@@ -173,25 +169,31 @@ function ItemsList() {
                                 <Text style={styles.itemText}>{item.name}</Text>
                                 <Text style={styles.qty}>{item.qty}</Text>
                             </View>
-                            <TouchableOpacity onPress={() => markItemAsBought(item, index)}>
-                                <MaterialCommunityIcons name="cart-plus" color={'#4BB543'} size={25} />
-                            </TouchableOpacity>
+                            <View style={styles.itemLeft}>
+                                <TouchableOpacity style={{marginEnd: 10}} onPress={() => showConfirmDialog(item.id, index)}>
+                                    <MaterialCommunityIcons name="trash-can-outline" color={'#FF0000'} size={25} />
+                                </TouchableOpacity>
+                                <TouchableOpacity onPress={() => markItemAsBought(item, index)}>
+                                    <MaterialCommunityIcons name="cart-arrow-down" color={'#4BB543'} size={25} />
+                                </TouchableOpacity>
+                            </View>
                         </View>
-                    </TouchableOpacity>
                     }
                     refreshing={refreshing}
                     onRefresh={refreshItemsList}
                 />
             </View>
             <View>
-            <KeyboardAvoidingView behavior={Platform.OS == 'ios' ? 'padding' : 'height'} style={styles.addItemWrapper}>
+                <KeyboardAvoidingView behavior={Platform.OS == 'ios' ? 'padding' : 'height'} style={styles.addItemWrapper}>
                     <TextInput style={styles.addItemInput} placeholderTextColor="#000" placeholder="Write an Item name"
                         onChangeText={text => setItem(text)} value={item}/>
                     <TextInput style={styles.addItemInputQty} placeholderTextColor="#000" placeholder="Qty" 
                         onChangeText={text => setQty(text)} value={qty} />
                     <TouchableOpacity onPress={() => addItem()}>
                         <View style={styles.addItemBtnWrapper}>
-                            <Text style={styles.addItemBtn}>+</Text>
+                            <Text style={styles.addItemBtn}>
+                                <MaterialCommunityIcons name="plus" color={'#fff'} size={25} />
+                            </Text>
                         </View>
                     </TouchableOpacity>
                 </KeyboardAvoidingView>
@@ -257,7 +259,7 @@ function ItemsList() {
         padding: 10,
         backgroundColor: "#fff",
         borderRadius: 10,
-        borderColor: "#c0c0c0",
+        borderColor: "#55BCF6",
         borderWidth: 1,
         width: 200,
         color: '#000'
@@ -267,7 +269,7 @@ function ItemsList() {
         padding: 10,
         backgroundColor: "#fff",
         borderRadius: 10,
-        borderColor: "#c0c0c0",
+        borderColor: "#55BCF6",
         borderWidth: 1,
         width: 70,
         color: '#000'
@@ -280,8 +282,7 @@ function ItemsList() {
         borderRadius: 60,
         justifyContent: "center",
         alignItems: "center",
-        borderColor: "#c0c0c0",
-        borderWidth: 1,
+        backgroundColor: '#55BCF6'
     }, 
 
     header: {
