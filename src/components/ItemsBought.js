@@ -72,25 +72,26 @@ function ItemsBought() {
     return (
         <View style={styles.container}>
             <View style={styles.header}>
-                <Text>Name</Text>
+                <Text>Item's Name</Text>
                 <Text>Quantity</Text>
+                <Text>Price(Rs.)</Text>
                 <Text>Action</Text>
             </View>
             <FlatList 
                 data={itemsBought}
                 renderItem={({item,index}) => 
-                <View style={styles.item}>
-                    <View style={styles.itemLeft}>
+                <View style={styles.header}>
+                    <View style={{flexDirection: 'row', width: 80}}>
                         <View style={styles.square}>
                             <Text style={styles.index}>{item.index}</Text>
                         </View>
-                        <Text style={styles.itemText}>{item.name}</Text>
-                        <Text style={styles.qty}>{item.qty}</Text>
+                        <Text>{item.name}</Text>
                     </View>
+                    <Text style={{width: 50}}>{item.qty}</Text>
+                    <Text style={{width: 50}}>{item.price}</Text>
                     <TouchableOpacity onPress={() => markItemAsBought(item, index)}>
                         <MaterialCommunityIcons name="cart-arrow-up" color={'#FF0000'} size={25} />
                     </TouchableOpacity>
-
                 </View>
                 }
                 refreshing={refreshing}
@@ -108,27 +109,13 @@ function ItemsBought() {
         backgroundColor: '#808080',
         paddingBottom: 80
     },
-    item: {
-      backgroundColor: '#FFF',
-      padding: 15,
-      borderRadius: 10,
-      flexDirection: 'row',
-      alignItems: 'center',
-      justifyContent: 'space-between',
-      marginBottom: 15,
-    },
-    itemLeft: {
-      flexDirection: 'row',
-      alignItems: 'center',
-      flexWrap: 'wrap'
-    },
     square: {
-      width: 24,
-      height: 24,
+      width: 20,
+      height: 20,
       backgroundColor: '#55BCF6',
       opacity: 0.4,
       borderRadius: 5,
-      marginRight: 15,
+      marginRight: 5,
       justifyContent: "center",
       alignItems: "center"
     },
@@ -138,13 +125,6 @@ function ItemsBought() {
     },
     itemText: {
       maxWidth: '80%',
-    },
-    circular: {
-    //   color: '#55BCF6',
-    //   borderColor: '#55BCF6',
-    },
-    qty: {
-        marginStart: 50
     },
 
     header: {

@@ -10,6 +10,7 @@ function ItemsList() {
     let db = openDatabase({ name: 'grocery.db'});
     const [item, setItem] = useState(null);
     const [qty, setQty] = useState(null);
+    const [price, setPrice] = useState(null);
     const [refreshing, setRefreshing] = useState(false);
     const { items, setItems, itemsBought, setItemsBought } = useContext(ItemsContext);
 
@@ -23,8 +24,8 @@ function ItemsList() {
         Keyboard.dismiss();
         db.transaction((txn) => {
             txn.executeSql(
-                'INSERT INTO items(name, qty, bought) values(?,?,?)',
-                [item,qty,0],
+                'INSERT INTO items(name, qty, bought, price) values(?,?,?,?)',
+                [item,qty,0,price],
                 (tx, res) => {
                     if(!res.rowsAffected) {
                         Toast.show('Something went wrong! Try again', Toast.SHORT);
@@ -38,6 +39,7 @@ function ItemsList() {
 
         setItem(null)
         setQty(null)
+        setPrice(null)
         
     }
 
@@ -63,18 +65,18 @@ function ItemsList() {
           "Are your sure?",
           "Are you sure you want to delete this item permanently?",
           [
-            // The "Yes" button
-            {
-              text: "Yes",
-              onPress: () => {
-                deleteItem(id,index);
-              },
-            },
             // The "No" button
             // Does nothing but dismiss the dialog when tapped
             {
               text: "No",
             },
+            // The "Yes" button
+            {
+                text: "Yes",
+                onPress: () => {
+                  deleteItem(id,index);
+                },
+            }
           ]
         );
       };
@@ -114,7 +116,7 @@ function ItemsList() {
                 if (res.rows.length == 0) {
                   txn.executeSql('DROP TABLE IF EXISTS items', []);
                   txn.executeSql(
-                    'CREATE TABLE IF NOT EXISTS items(id INTEGER PRIMARY KEY AUTOINCREMENT, name VARCHAR(30), qty VARCHAR(15), bought INTEGER)',
+                    'CREATE TABLE IF NOT EXISTS items(id INTEGER PRIMARY KEY AUTOINCREMENT, name VARCHAR(30), qty VARCHAR(15), bought INTEGER, price INTEGER)',
                     []
                   );
                 }
@@ -153,30 +155,33 @@ function ItemsList() {
         <>
             <View style={styles.container} >
                 <View style={styles.header}>
-                    <Text>Name</Text>
+                    <Text>Item's Name</Text>
                     <Text>Quantity</Text>
+                    <Text>Price(Rs.)</Text>
                     <Text>Action</Text>
                 </View>
                 <FlatList 
                     data={items}
                     keyExtractor={(items, index) => String(index)}
                     renderItem={({item,index}) => 
-                        <View style={styles.item}>
-                            <View style={styles.itemLeft}>
+                        <View style={styles.header}>
+                            <View style={{flexDirection: 'row', width: 80}}>
                                 <View style={styles.square}>
                                     <Text style={styles.index}>{item.index}</Text>
                                 </View>
-                                <Text style={styles.itemText}>{item.name}</Text>
-                                <Text style={styles.qty}>{item.qty}</Text>
+                                <Text>{item.name}</Text>
                             </View>
-                            <View style={styles.itemLeft}>
-                                <TouchableOpacity style={{marginEnd: 10}} onPress={() => showConfirmDialog(item.id, index)}>
-                                    <MaterialCommunityIcons name="trash-can-outline" color={'#FF0000'} size={25} />
-                                </TouchableOpacity>
-                                <TouchableOpacity onPress={() => markItemAsBought(item, index)}>
-                                    <MaterialCommunityIcons name="cart-arrow-down" color={'#4BB543'} size={25} />
-                                </TouchableOpacity>
+                            <Text style={{width: 40}}>{item.qty}</Text>
+                            <Text>{item.price}</Text>
+                            <View style={{flexDirection: 'row'}}>
+                            <TouchableOpacity style={{marginEnd: 5}} onPress={() => showConfirmDialog(item.id, index)}>
+                                <MaterialCommunityIcons name="trash-can-outline" color={'#FF0000'} size={25} />
+                            </TouchableOpacity>
+                            <TouchableOpacity onPress={() => markItemAsBought(item, index)}>
+                                <MaterialCommunityIcons name="cart-arrow-down" color={'#4BB543'} size={25} />
+                            </TouchableOpacity>
                             </View>
+                            
                         </View>
                     }
                     refreshing={refreshing}
@@ -189,6 +194,8 @@ function ItemsList() {
                         onChangeText={text => setItem(text)} value={item}/>
                     <TextInput style={styles.addItemInputQty} placeholderTextColor="#000" placeholder="Qty" 
                         onChangeText={text => setQty(text)} value={qty} />
+                    <TextInput style={styles.addItemInputQty} placeholderTextColor="#000" placeholder="Price" 
+                        onChangeText={text => setPrice(text)} value={price} />
                     <TouchableOpacity onPress={() => addItem()}>
                         <View style={styles.addItemBtnWrapper}>
                             <Text style={styles.addItemBtn}>
@@ -197,6 +204,7 @@ function ItemsList() {
                         </View>
                     </TouchableOpacity>
                 </KeyboardAvoidingView>
+
             </View>
         </>
     );
@@ -210,27 +218,13 @@ function ItemsList() {
         backgroundColor: '#808080',
         paddingBottom: 80
     },
-    item: {
-      backgroundColor: '#FFF',
-      padding: 15,
-      borderRadius: 10,
-      flexDirection: 'row',
-      alignItems: 'center',
-      justifyContent: 'space-between',
-      marginBottom: 15,
-    },
-    itemLeft: {
-      flexDirection: 'row',
-      alignItems: 'center',
-      flexWrap: 'wrap'
-    },
     square: {
-      width: 24,
-      height: 24,
+      width: 20,
+      height: 20,
       backgroundColor: '#55BCF6',
       opacity: 0.4,
       borderRadius: 5,
-      marginRight: 15,
+      marginRight: 5,
       justifyContent: "center",
       alignItems: "center"
     },
@@ -241,11 +235,6 @@ function ItemsList() {
     itemText: {
       maxWidth: '80%',
     },
-
-    qty: {
-        marginStart: 50
-    },
-
     addItemWrapper: {
         position: 'absolute',
         bottom: 12,
@@ -261,7 +250,7 @@ function ItemsList() {
         borderRadius: 10,
         borderColor: "#55BCF6",
         borderWidth: 1,
-        width: 200,
+        width: 150,
         color: '#000'
     },
 
