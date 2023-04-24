@@ -1,4 +1,4 @@
-package com.grocerylistmanager;
+package com.cartman;
 import android.os.Bundle;
 import com.facebook.react.ReactActivity;
 import org.devio.rn.splashscreen.SplashScreen;
@@ -20,7 +20,7 @@ public class MainActivity extends ReactActivity {
    */
   @Override
   protected String getMainComponentName() {
-    return "grocerylistmanager";
+    return "cartman";
   }
 
   /**

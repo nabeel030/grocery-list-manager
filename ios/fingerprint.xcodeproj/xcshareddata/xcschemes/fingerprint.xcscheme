@@ -15,9 +15,9 @@
             <BuildableReference
                BuildableIdentifier = "primary"
                BlueprintIdentifier = "13B07F861A680F5B00A75B9A"
-               BuildableName = "grocerylistmanager.app"
-               BlueprintName = "grocerylistmanager"
-               ReferencedContainer = "container:grocerylistmanager.xcodeproj">
+               BuildableName = "cartman.app"
+               BlueprintName = "cartman"
+               ReferencedContainer = "container:cartman.xcodeproj">
             </BuildableReference>
          </BuildActionEntry>
       </BuildActionEntries>
@@ -33,9 +33,9 @@
             <BuildableReference
                BuildableIdentifier = "primary"
                BlueprintIdentifier = "00E356ED1AD99517003FC87E"
-               BuildableName = "grocerylistmanagerTests.xctest"
-               BlueprintName = "grocerylistmanagerTests"
-               ReferencedContainer = "container:grocerylistmanager.xcodeproj">
+               BuildableName = "cartmanTests.xctest"
+               BlueprintName = "cartmanTests"
+               ReferencedContainer = "container:cartman.xcodeproj">
             </BuildableReference>
          </TestableReference>
       </Testables>
@@ -55,9 +55,9 @@
          <BuildableReference
             BuildableIdentifier = "primary"
             BlueprintIdentifier = "13B07F861A680F5B00A75B9A"
-            BuildableName = "grocerylistmanager.app"
-            BlueprintName = "grocerylistmanager"
-            ReferencedContainer = "container:grocerylistmanager.xcodeproj">
+            BuildableName = "cartman.app"
+            BlueprintName = "cartman"
+            ReferencedContainer = "container:cartman.xcodeproj">
          </BuildableReference>
       </BuildableProductRunnable>
    </LaunchAction>
@@ -72,9 +72,9 @@
          <BuildableReference
             BuildableIdentifier = "primary"
             BlueprintIdentifier = "13B07F861A680F5B00A75B9A"
-            BuildableName = "grocerylistmanager.app"
-            BlueprintName = "grocerylistmanager"
-            ReferencedContainer = "container:grocerylistmanager.xcodeproj">
+            BuildableName = "cartman.app"
+            BlueprintName = "cartman"
+            ReferencedContainer = "container:cartman.xcodeproj">
          </BuildableReference>
       </BuildableProductRunnable>
    </ProfileAction>

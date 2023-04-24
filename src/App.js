@@ -12,7 +12,9 @@ const Tab = createBottomTabNavigator();
 function App() {
 
   useEffect(() => {
-    SplashScreen.hide();
+    setTimeout(function() {
+      SplashScreen.hide();
+    }, 1500)
   }, []);
 
   return (

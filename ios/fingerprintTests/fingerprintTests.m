@@ -7,11 +7,11 @@
 #define TIMEOUT_SECONDS 600
 #define TEXT_TO_LOOK_FOR @"Welcome to React"
 
-@interface grocerylistmanagerTests : XCTestCase
+@interface cartmanTests : XCTestCase
 
 @end
 
-@implementation grocerylistmanagerTests
+@implementation cartmanTests
 
 - (BOOL)findSubviewInView:(UIView *)view matching:(BOOL (^)(UIView *view))test
 {

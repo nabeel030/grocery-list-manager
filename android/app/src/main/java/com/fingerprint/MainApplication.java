@@ -1,4 +1,4 @@
-package com.grocerylistmanager;
+package com.cartman;
 
 import android.app.Application;
 import com.facebook.react.PackageList;
