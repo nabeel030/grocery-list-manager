@@ -1,6 +1,6 @@
 import React, {useState, useEffect, useContext} from "react";
 import { Text } from "react-native-paper";
-import { View, StyleSheet, FlatList, TouchableOpacity, Alert, KeyboardAvoidingView, Keyboard, Platform, TextInput } from "react-native";
+import { View, StyleSheet, FlatList, TouchableOpacity, Alert, KeyboardAvoidingView, Keyboard, Platform, TextInput, LogBox } from "react-native";
 import {openDatabase} from 'react-native-sqlite-storage';
 import MaterialCommunityIcons from 'react-native-vector-icons/MaterialCommunityIcons';
 import Toast from 'react-native-simple-toast';
@@ -11,36 +11,96 @@ function ItemsList() {
     const [item, setItem] = useState(null);
     const [qty, setQty] = useState(null);
     const [price, setPrice] = useState(null);
+    const [itemId, setItemId] = useState(null);
+
     const [refreshing, setRefreshing] = useState(false);
-    const { items, setItems, itemsBought, setItemsBought } = useContext(ItemsContext);
+    const { items, setItems, itemsBought, setItemsBought, itemsTotal, setItemsTotal, itemsBoughtTotal, setItemsBoughtTotal } = useContext(ItemsContext);
 
     const refreshItemsList = () => {
         setRefreshing(true);
         fetchItems();
+        resetInputs();
         setRefreshing(false);
     } 
 
+
     const addItem = () => {
-        Keyboard.dismiss();
+        if(!item) {
+            Toast.show('Item name can not be blank!', Toast.SHORT);
+            return;
+        }
+
         db.transaction((txn) => {
             txn.executeSql(
-                'INSERT INTO items(name, qty, bought, price) values(?,?,?,?)',
-                [item,qty,0,price],
+                'select * from items where name=?',
+                [item],
                 (tx, res) => {
-                    if(!res.rowsAffected) {
-                        Toast.show('Something went wrong! Try again', Toast.SHORT);
+                    if (res.rows.length) {
+                        Toast.show('Item with this name already exists!', Toast.SHORT);
                     } else {
-                        Toast.show('New Item added successfully!', Toast.SHORT);
-                        refreshItemsList();
-                    } 
+                        txn.executeSql(
+                            'INSERT INTO items(name, qty, bought, price) values(?,?,?,?)',
+                            [item,qty,0,price],
+                            (tx, res) => {
+                                if(!res.rowsAffected) {
+                                    Toast.show('Something went wrong! Try again', Toast.SHORT);
+                                } else {
+                                    resetInputs();
+                                    Keyboard.dismiss();
+                                    Toast.show('New Item added successfully!', Toast.SHORT);
+                                    refreshItemsList();
+                                } 
+                            }
+                        );
+                    }
                 }
             );
         });
+    }
 
+    const editItem = (item) => {
+        resetInputs();
+        setItem(item.name)
+        setItemId(item.id)
+        setQty(item.qty)
+        item.price ? setPrice((item.price).toString()) : setPrice(null); 
+    }
+
+    const resetInputs = () => {
         setItem(null)
         setQty(null)
         setPrice(null)
-        
+        setItemId(null)
+    }
+
+    const updateItem = () => {
+        db.transaction((txn) => {
+            txn.executeSql(
+                'select * from items where name=? and id != ?',
+                [item, itemId],
+                (tx, res) => {
+                    console.log(res.rows.length);
+                    if (res.rows.length) {
+                        Toast.show('Item with this name already exists!', Toast.SHORT);
+                    } else {
+                        txn.executeSql(
+                            "UPDATE items set name = ?, qty = ?, price = ? where id = ?",
+                            [item, qty, price, itemId],
+                            (tx, res) => {
+                                if(res.rowsAffected) {
+                                    fetchItems();
+                                    Toast.show('Item updated successfully!', Toast.SHORT);
+                                    resetInputs();
+                                    Keyboard.dismiss();
+                                } else {
+                                    Toast.show('Something went wrong! Try again', Toast.SHORT);
+                                }                    
+                            }
+                        )
+                    }
+                }
+            );
+        })
     }
 
     const deleteItem = (id, index) => {
@@ -50,7 +110,7 @@ function ItemsList() {
                 [id],
                 (tx, res) => {
                     if(res.rowsAffected) {
-                        splice(index);
+                        fetchItems()
                         Toast.show('Item Deleted Successfully!', Toast.SHORT);
                     } else {
                         Toast.show('Something went wrong! Try again', Toast.SHORT);
@@ -81,12 +141,6 @@ function ItemsList() {
         );
       };
 
-    const splice = (index) => {
-        let itemsCopy = [...items];
-        itemsCopy.splice(index, 1);
-        setItems(itemsCopy);
-    }
-
     const markItemAsBought = (item,index) => {
         let bought = item.bought;
         
@@ -96,7 +150,8 @@ function ItemsList() {
                 [!bought,item.id],
                 (tx, res) => {
                     if(res.rowsAffected) {
-                        splice(index);
+                        setItemsBoughtTotal(itemsBoughtTotal+item.price)
+                        fetchItems()
                         setItemsBought([...itemsBought, item])
                         Toast.show('Item added to cart successfully!', Toast.SHORT);
                     } else {
@@ -143,6 +198,17 @@ function ItemsList() {
                     setItems(arr);
                 }
             );
+
+            txn.executeSql(
+                'select sum(price) as total from items where bought=?',
+                [0],
+                (tx, res) => {
+                    if(res.rows.length) {
+                        // setTotal(res.rows.item(0).total)
+                        setItemsTotal(res.rows.item(0).total)
+                    }
+                }
+            );
         });
     }
 
@@ -157,49 +223,59 @@ function ItemsList() {
                 <View style={styles.header}>
                     <Text>Item's Name</Text>
                     <Text>Quantity</Text>
-                    <Text>Price(Rs.)</Text>
+                    <Text>Price(Rs)</Text>
                     <Text>Action</Text>
                 </View>
                 <FlatList 
                     data={items}
                     keyExtractor={(items, index) => String(index)}
                     renderItem={({item,index}) => 
-                        <View style={styles.header}>
-                            <View style={{flexDirection: 'row', width: 80}}>
-                                <View style={styles.square}>
-                                    <Text style={styles.index}>{item.index}</Text>
+                        <TouchableOpacity onLongPress={() => editItem(item)}>
+                            <View style={styles.header}>
+                                <View style={{flexDirection: 'row', width: 80}}>
+                                    <View style={styles.square}>
+                                        <Text style={styles.index}>{item.index}</Text>
+                                    </View>
+                                    <Text>{item.name}</Text>
                                 </View>
-                                <Text>{item.name}</Text>
+                                <Text style={{width: 40}}>{item.qty}</Text>
+                                <Text>{item.price ? item.price.toLocaleString("en-US") : <></>}</Text>
+                                <View style={{flexDirection: 'row'}}>
+                                <TouchableOpacity style={{marginEnd: 5}} onPress={() => showConfirmDialog(item.id, index)}>
+                                    <MaterialCommunityIcons name="trash-can-outline" color={'#FF0000'} size={25} />
+                                </TouchableOpacity>
+                                <TouchableOpacity onPress={() => markItemAsBought(item, index)}>
+                                    <MaterialCommunityIcons name="cart-arrow-down" color={'#4BB543'} size={25} />
+                                </TouchableOpacity>
+                                </View>
                             </View>
-                            <Text style={{width: 40}}>{item.qty}</Text>
-                            <Text>{item.price}</Text>
-                            <View style={{flexDirection: 'row'}}>
-                            <TouchableOpacity style={{marginEnd: 5}} onPress={() => showConfirmDialog(item.id, index)}>
-                                <MaterialCommunityIcons name="trash-can-outline" color={'#FF0000'} size={25} />
-                            </TouchableOpacity>
-                            <TouchableOpacity onPress={() => markItemAsBought(item, index)}>
-                                <MaterialCommunityIcons name="cart-arrow-down" color={'#4BB543'} size={25} />
-                            </TouchableOpacity>
-                            </View>
-                            
-                        </View>
+                        </TouchableOpacity>
                     }
                     refreshing={refreshing}
                     onRefresh={refreshItemsList}
+                    ListFooterComponent={items.length ? () => <View style={styles.header}>
+                        <Text style={{fontWeight: 900}}>Total</Text>
+                        <Text style={{fontWeight: 900}}>Rs. {itemsTotal ? itemsTotal.toLocaleString("en-US") : 0}</Text>
+                    </View> : <></>}
                 />
             </View>
             <View>
                 <KeyboardAvoidingView behavior={Platform.OS == 'ios' ? 'padding' : 'height'} style={styles.addItemWrapper}>
                     <TextInput style={styles.addItemInput} placeholderTextColor="#000" placeholder="Write an Item name"
-                        onChangeText={text => setItem(text)} value={item}/>
+                        onChangeText={text => setItem(text.trim())} value={item}/>
                     <TextInput style={styles.addItemInputQty} placeholderTextColor="#000" placeholder="Qty" 
-                        onChangeText={text => setQty(text)} value={qty} />
+                        onChangeText={text => setQty(text.trim())} value={qty} />
                     <TextInput style={styles.addItemInputQty} placeholderTextColor="#000" placeholder="Price" 
-                        onChangeText={text => setPrice(text)} value={price} />
-                    <TouchableOpacity onPress={() => addItem()}>
+                        onChangeText={text => setPrice(text.trim())} value={price} keyboardType='numeric'/>
+                    <TouchableOpacity onPress={itemId ? () => updateItem() : () => addItem()}>
                         <View style={styles.addItemBtnWrapper}>
                             <Text style={styles.addItemBtn}>
-                                <MaterialCommunityIcons name="plus" color={'#fff'} size={25} />
+                                {
+                                    itemId ? 
+                                    <MaterialCommunityIcons name="note-edit-outline" color={'#fff'} size={25} /> :
+                                    <MaterialCommunityIcons name="plus" color={'#fff'} size={25} /> 
+                                }
+                                
                             </Text>
                         </View>
                     </TouchableOpacity>
@@ -265,8 +341,8 @@ function ItemsList() {
     },
 
     addItemBtnWrapper: {
-        width: 60,
-        height: 60,
+        width: 55,
+        height: 55,
         backgroundColor: "#fff",
         borderRadius: 60,
         justifyContent: "center",

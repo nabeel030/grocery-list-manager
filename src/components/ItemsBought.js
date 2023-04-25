@@ -8,7 +8,9 @@ import {ItemsContext} from '../context'
 
 function ItemsBought() {
     let db = openDatabase({ name: 'grocery.db'});
-    const { items, setItems, itemsBought, setItemsBought } = useContext(ItemsContext);
+    const { items, setItems, itemsBought, setItemsBought, itemsTotal, setItemsTotal, itemsBoughtTotal, setItemsBoughtTotal } = useContext(ItemsContext);
+
+    const [total, setTotal] = useState(0);
 
     const [refreshing, setRefreshing] = useState(false);
 
@@ -36,13 +38,17 @@ function ItemsBought() {
                     setItemsBought(arr);
                 }
             );
-        });
-    }
 
-    const splice = (index) => {
-        let itemsCopy = [...itemsBought];
-        itemsCopy.splice(index, 1);
-        setItemsBought(itemsCopy);
+            txn.executeSql(
+                'select sum(price) as total from items where bought=?',
+                [1],
+                (tx, res) => {
+                    if(res.rows.length) {
+                        setItemsBoughtTotal(res.rows.item(0).total)
+                    }
+                }
+            );
+        });
     }
 
     const markItemAsBought = (item,index) => {
@@ -54,7 +60,8 @@ function ItemsBought() {
                 [!bought,item.id],
                 (tx, res) => {
                     if(res.rowsAffected) {
-                        splice(index);
+                        setItemsTotal(itemsTotal+item.price)
+                        fetchItems();
                         setItems([...items, item])
                         Toast.show('Item removed from cart successfully!', Toast.SHORT);
                     } else {
@@ -74,7 +81,7 @@ function ItemsBought() {
             <View style={styles.header}>
                 <Text>Item's Name</Text>
                 <Text>Quantity</Text>
-                <Text>Price(Rs.)</Text>
+                <Text>Price(Rs)</Text>
                 <Text>Action</Text>
             </View>
             <FlatList 
@@ -88,7 +95,7 @@ function ItemsBought() {
                         <Text>{item.name}</Text>
                     </View>
                     <Text style={{width: 50}}>{item.qty}</Text>
-                    <Text style={{width: 50}}>{item.price}</Text>
+                    <Text style={{width: 50}}>{item.price ? item.price.toLocaleString("en-US") : <></>}</Text>
                     <TouchableOpacity onPress={() => markItemAsBought(item, index)}>
                         <MaterialCommunityIcons name="cart-arrow-up" color={'#FF0000'} size={25} />
                     </TouchableOpacity>
@@ -96,6 +103,11 @@ function ItemsBought() {
                 }
                 refreshing={refreshing}
                 onRefresh={refreshItemsList}
+
+                ListFooterComponent={itemsBought.length ? () => <View style={styles.header}>
+                        <Text style={{fontWeight: 900}}>Total</Text>
+                        <Text style={{fontWeight: 900}}>Rs. {itemsBoughtTotal ? itemsBoughtTotal.toLocaleString("en-US") : 0}</Text>
+                    </View> : <></>}
             />
         </View>
     );
