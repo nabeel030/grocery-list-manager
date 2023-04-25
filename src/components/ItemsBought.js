@@ -51,6 +51,12 @@ function ItemsBought() {
         });
     }
 
+    const splice = (index) => {
+        let itemsCopy = [...itemsBought];
+        itemsCopy.splice(index, 1);
+        setItemsBought(itemsCopy);
+    }
+
     const markItemAsBought = (item,index) => {
         let bought = item.bought;
         
@@ -61,6 +67,7 @@ function ItemsBought() {
                 (tx, res) => {
                     if(res.rowsAffected) {
                         setItemsTotal(itemsTotal+item.price)
+                        splice(index)
                         fetchItems();
                         setItems([...items, item])
                         Toast.show('Item removed from cart successfully!', Toast.SHORT);

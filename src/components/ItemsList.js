@@ -25,7 +25,9 @@ function ItemsList() {
 
 
     const addItem = () => {
-        if(!item) {
+        let itemName = item.trim();
+
+        if(!itemName) {
             Toast.show('Item name can not be blank!', Toast.SHORT);
             return;
         }
@@ -33,14 +35,14 @@ function ItemsList() {
         db.transaction((txn) => {
             txn.executeSql(
                 'select * from items where name=?',
-                [item],
+                [itemName],
                 (tx, res) => {
                     if (res.rows.length) {
                         Toast.show('Item with this name already exists!', Toast.SHORT);
                     } else {
                         txn.executeSql(
                             'INSERT INTO items(name, qty, bought, price) values(?,?,?,?)',
-                            [item,qty,0,price],
+                            [itemName,qty,0,price],
                             (tx, res) => {
                                 if(!res.rowsAffected) {
                                     Toast.show('Something went wrong! Try again', Toast.SHORT);
@@ -74,10 +76,17 @@ function ItemsList() {
     }
 
     const updateItem = () => {
+        let itemName = item.trim();
+
+        if(!itemName) {
+            Toast.show('Item name can not be blank!', Toast.SHORT);
+            return;
+        }
+
         db.transaction((txn) => {
             txn.executeSql(
                 'select * from items where name=? and id != ?',
-                [item, itemId],
+                [itemName, itemId],
                 (tx, res) => {
                     console.log(res.rows.length);
                     if (res.rows.length) {
@@ -85,7 +94,7 @@ function ItemsList() {
                     } else {
                         txn.executeSql(
                             "UPDATE items set name = ?, qty = ?, price = ? where id = ?",
-                            [item, qty, price, itemId],
+                            [itemName, qty, price, itemId],
                             (tx, res) => {
                                 if(res.rowsAffected) {
                                     fetchItems();
@@ -110,6 +119,7 @@ function ItemsList() {
                 [id],
                 (tx, res) => {
                     if(res.rowsAffected) {
+                        splice(index)
                         fetchItems()
                         Toast.show('Item Deleted Successfully!', Toast.SHORT);
                     } else {
@@ -151,6 +161,7 @@ function ItemsList() {
                 (tx, res) => {
                     if(res.rowsAffected) {
                         setItemsBoughtTotal(itemsBoughtTotal+item.price)
+                        splice(index)
                         fetchItems()
                         setItemsBought([...itemsBought, item])
                         Toast.show('Item added to cart successfully!', Toast.SHORT);
@@ -212,6 +223,12 @@ function ItemsList() {
         });
     }
 
+    const splice = (index) => {
+        let itemsCopy = [...items];
+        itemsCopy.splice(index, 1);
+        setItems(itemsCopy);
+    }
+
     useEffect(() => {
         createTable();
         fetchItems();
@@ -262,11 +279,11 @@ function ItemsList() {
             <View>
                 <KeyboardAvoidingView behavior={Platform.OS == 'ios' ? 'padding' : 'height'} style={styles.addItemWrapper}>
                     <TextInput style={styles.addItemInput} placeholderTextColor="#000" placeholder="Write an Item name"
-                        onChangeText={text => setItem(text.trim())} value={item}/>
+                        onChangeText={text => setItem(text)} value={item}/>
                     <TextInput style={styles.addItemInputQty} placeholderTextColor="#000" placeholder="Qty" 
-                        onChangeText={text => setQty(text.trim())} value={qty} />
+                        onChangeText={text => setQty(text)} value={qty} />
                     <TextInput style={styles.addItemInputQty} placeholderTextColor="#000" placeholder="Price" 
-                        onChangeText={text => setPrice(text.trim())} value={price} keyboardType='numeric'/>
+                        onChangeText={text => setPrice(text)} value={price} keyboardType='numeric'/>
                     <TouchableOpacity onPress={itemId ? () => updateItem() : () => addItem()}>
                         <View style={styles.addItemBtnWrapper}>
                             <Text style={styles.addItemBtn}>
