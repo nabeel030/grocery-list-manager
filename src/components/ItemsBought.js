@@ -40,7 +40,7 @@ function ItemsBought() {
             );
 
             txn.executeSql(
-                'select sum(price) as total from items where bought=?',
+                'select sum(price*qty) as total from items where bought=?',
                 [1],
                 (tx, res) => {
                     if(res.rows.length) {
@@ -66,7 +66,7 @@ function ItemsBought() {
                 [!bought,item.id],
                 (tx, res) => {
                     if(res.rowsAffected) {
-                        setItemsTotal(itemsTotal+item.price)
+                        setItemsTotal(itemsTotal+(item.price * item.qty))
                         splice(index)
                         fetchItems();
                         setItems([...items, item])
@@ -87,8 +87,8 @@ function ItemsBought() {
         <View style={styles.container}>
             <View style={styles.header}>
                 <Text>Item's Name</Text>
-                <Text>Quantity</Text>
-                <Text>Price(Rs)</Text>
+                <Text>Qty (Kg)(Unit)</Text>
+                <Text>Price/Unit</Text>
                 <Text>Action</Text>
             </View>
             <FlatList 

@@ -25,39 +25,37 @@ function ItemsList() {
 
 
     const addItem = () => {
-        let itemName = item.trim();
-
-        if(!itemName) {
+        if(!item) {
             Toast.show('Item name can not be blank!', Toast.SHORT);
-            return;
-        }
-
-        db.transaction((txn) => {
-            txn.executeSql(
-                'select * from items where name=?',
-                [itemName],
-                (tx, res) => {
-                    if (res.rows.length) {
-                        Toast.show('Item with this name already exists!', Toast.SHORT);
-                    } else {
-                        txn.executeSql(
-                            'INSERT INTO items(name, qty, bought, price) values(?,?,?,?)',
-                            [itemName,qty,0,price],
-                            (tx, res) => {
-                                if(!res.rowsAffected) {
-                                    Toast.show('Something went wrong! Try again', Toast.SHORT);
-                                } else {
-                                    resetInputs();
-                                    Keyboard.dismiss();
-                                    Toast.show('New Item added successfully!', Toast.SHORT);
-                                    refreshItemsList();
-                                } 
-                            }
-                        );
+        } else {
+            let itemName = item.trim();
+            db.transaction((txn) => {
+                txn.executeSql(
+                    'select * from items where name=?',
+                    [itemName],
+                    (tx, res) => {
+                        if (res.rows.length) {
+                            Toast.show('Item with this name already exists!', Toast.SHORT);
+                        } else {
+                            txn.executeSql(
+                                'INSERT INTO items(name, qty, bought, price) values(?,?,?,?)',
+                                [itemName,qty,0,price],
+                                (tx, res) => {
+                                    if(!res.rowsAffected) {
+                                        Toast.show('Something went wrong! Try again', Toast.SHORT);
+                                    } else {
+                                        resetInputs();
+                                        Keyboard.dismiss();
+                                        Toast.show('New Item added successfully!', Toast.SHORT);
+                                        refreshItemsList();
+                                    } 
+                                }
+                            );
+                        }
                     }
-                }
-            );
-        });
+                );
+            });
+        }
     }
 
     const editItem = (item) => {
@@ -76,40 +74,37 @@ function ItemsList() {
     }
 
     const updateItem = () => {
-        let itemName = item.trim();
-
-        if(!itemName) {
+        if(!item) {
             Toast.show('Item name can not be blank!', Toast.SHORT);
-            return;
-        }
-
-        db.transaction((txn) => {
-            txn.executeSql(
-                'select * from items where name=? and id != ?',
-                [itemName, itemId],
-                (tx, res) => {
-                    console.log(res.rows.length);
-                    if (res.rows.length) {
-                        Toast.show('Item with this name already exists!', Toast.SHORT);
-                    } else {
-                        txn.executeSql(
-                            "UPDATE items set name = ?, qty = ?, price = ? where id = ?",
-                            [itemName, qty, price, itemId],
-                            (tx, res) => {
-                                if(res.rowsAffected) {
-                                    fetchItems();
-                                    Toast.show('Item updated successfully!', Toast.SHORT);
-                                    resetInputs();
-                                    Keyboard.dismiss();
-                                } else {
-                                    Toast.show('Something went wrong! Try again', Toast.SHORT);
-                                }                    
-                            }
-                        )
+        } else {
+            let itemName = item.trim();
+            db.transaction((txn) => {
+                txn.executeSql(
+                    'select * from items where name=? and id != ?',
+                    [itemName, itemId],
+                    (tx, res) => {
+                        if (res.rows.length) {
+                            Toast.show('Item with this name already exists!', Toast.SHORT);
+                        } else {
+                            txn.executeSql(
+                                "UPDATE items set name = ?, qty = ?, price = ? where id = ?",
+                                [itemName, qty, price, itemId],
+                                (tx, res) => {
+                                    if(res.rowsAffected) {
+                                        fetchItems();
+                                        Toast.show('Item updated successfully!', Toast.SHORT);
+                                        resetInputs();
+                                        Keyboard.dismiss();
+                                    } else {
+                                        Toast.show('Something went wrong! Try again', Toast.SHORT);
+                                    }                    
+                                }
+                            )
+                        }
                     }
-                }
-            );
-        })
+                );
+            })
+        }
     }
 
     const deleteItem = (id, index) => {
@@ -160,7 +155,7 @@ function ItemsList() {
                 [!bought,item.id],
                 (tx, res) => {
                     if(res.rowsAffected) {
-                        setItemsBoughtTotal(itemsBoughtTotal+item.price)
+                        setItemsBoughtTotal(itemsBoughtTotal+(item.price * item.qty))
                         splice(index)
                         fetchItems()
                         setItemsBought([...itemsBought, item])
@@ -211,7 +206,7 @@ function ItemsList() {
             );
 
             txn.executeSql(
-                'select sum(price) as total from items where bought=?',
+                'select sum(price*qty) as total from items where bought=?',
                 [0],
                 (tx, res) => {
                     if(res.rows.length) {
@@ -239,8 +234,8 @@ function ItemsList() {
             <View style={styles.container} >
                 <View style={styles.header}>
                     <Text>Item's Name</Text>
-                    <Text>Quantity</Text>
-                    <Text>Price(Rs)</Text>
+                    <Text>Qty (Kg)(Unit)</Text>
+                    <Text>Price/Unit</Text>
                     <Text>Action</Text>
                 </View>
                 <FlatList 
