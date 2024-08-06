@@ -1,2 +1,2 @@
 # grocery-list-manager
-Simple react native application to manage grocery list
+## Simple react native application to management app
